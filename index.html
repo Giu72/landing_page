@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PraticaOk — Raccolta Documenti Automatica su WhatsApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blu: #0D2137;
+    --blu-medio: #1A3A5C;
+    --blu-accento: #2E86C1;
+    --oro: #C9A84C;
+    --oro-chiaro: #F0D080;
+    --bianco: #F8F9FA;
+    --grigio: #6B7B8D;
+    --testo: #1A2332;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bianco);
+    color: var(--testo);
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    background: var(--blu);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 40px 24px;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    width: 800px; height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(46,134,193,0.15) 0%, transparent 70%);
+    top: -200px; right: -200px;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+    bottom: -100px; left: -100px;
+  }
+
+  .hero-badge {
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.4);
+    color: var(--oro-chiaro);
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .hero-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(64px, 10vw, 120px);
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1;
+    text-align: center;
+    animation: fadeDown 0.8s ease 0.1s both;
+  }
+
+  .hero-logo span { color: var(--blu-accento); }
+
+  .hero-sub {
+    font-size: clamp(18px, 2.5vw, 24px);
+    color: rgba(255,255,255,0.7);
+    font-weight: 300;
+    text-align: center;
+    max-width: 600px;
+    margin-top: 20px;
+    line-height: 1.6;
+    animation: fadeDown 0.8s ease 0.2s both;
+  }
+
+  .hero-pilastri {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 40px;
+    animation: fadeDown 0.8s ease 0.3s both;
+  }
+
+  .pill {
+    padding: 10px 22px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: 1.5px solid;
+  }
+
+  .pill-blu   { color: #6BB8E8; border-color: #6BB8E8; }
+  .pill-verde { color: #6DD98C; border-color: #6DD98C; }
+  .pill-oro   { color: #F0C040; border-color: #F0C040; }
+  .pill-arancio { color: #F08858; border-color: #F08858; }
+
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 48px;
+    justify-content: center;
+    animation: fadeDown 0.8s ease 0.4s both;
+  }
+
+  .btn-primary {
+    background: var(--blu-accento);
+    color: #fff;
+    padding: 16px 36px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary:hover {
+    background: #2470A0;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(46,134,193,0.4);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: rgba(255,255,255,0.8);
+    padding: 16px 36px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(255,255,255,0.7);
+    color: #fff;
+  }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255,255,255,0.3);
+    font-size: 12px;
+    letter-spacing: 2px;
+    animation: bounce 2s infinite;
+  }
+
+  .scroll-hint::after {
+    content: '';
+    width: 1px;
+    height: 40px;
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* ── PROBLEMA ── */
+  .problema {
+    background: #fff;
+    padding: 100px 24px;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--blu-accento);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 700;
+    color: var(--blu);
+    line-height: 1.15;
+    margin-bottom: 24px;
+  }
+
+  .section-title em {
+    font-style: normal;
+    color: var(--blu-accento);
+  }
+
+  .problema-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin-top: 56px;
+  }
+
+  .problema-card {
+    background: #F4F7FA;
+    border-radius: 16px;
+    padding: 32px;
+    border-left: 4px solid var(--blu-accento);
+    transition: transform 0.3s ease;
+  }
+
+  .problema-card:hover { transform: translateY(-4px); }
+
+  .problema-icon {
+    font-size: 36px;
+    margin-bottom: 16px;
+  }
+
+  .problema-card h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--blu);
+    margin-bottom: 10px;
+  }
+
+  .problema-card p {
+    font-size: 15px;
+    color: var(--grigio);
+    line-height: 1.6;
+  }
+
+  /* ── SOLUZIONE ── */
+  .soluzione {
+    background: var(--blu);
+    padding: 100px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .soluzione::before {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(46,134,193,0.12) 0%, transparent 70%);
+    top: -100px; right: -100px;
+  }
+
+  .soluzione .section-title { color: #fff; }
+  .soluzione .section-label { color: var(--oro); }
+
+  .soluzione-intro {
+    font-size: 20px;
+    color: rgba(255,255,255,0.7);
+    max-width: 700px;
+    line-height: 1.7;
+    margin-bottom: 64px;
+  }
+
+  /* ── 4 PILASTRI ── */
+  .pilastri-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+  }
+
+  .pilastro-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 36px 28px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pilastro-card:hover {
+    background: rgba(255,255,255,0.09);
+    transform: translateY(-6px);
+    border-color: rgba(255,255,255,0.2);
+  }
+
+  .pilastro-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    font-weight: 900;
+    opacity: 0.08;
+    position: absolute;
+    top: 16px; right: 24px;
+    line-height: 1;
+  }
+
+  .pilastro-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+  }
+
+  .pilastro-card h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .pilastro-card p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.7;
+  }
+
+  .p-coordina { border-top: 3px solid #6BB8E8; }
+  .p-coordina .pilastro-dot { background: #6BB8E8; }
+  .p-coordina .pilastro-num { color: #6BB8E8; }
+
+  .p-archivia { border-top: 3px solid #6DD98C; }
+  .p-archivia .pilastro-dot { background: #6DD98C; }
+  .p-archivia .pilastro-num { color: #6DD98C; }
+
+  .p-ricorda { border-top: 3px solid #F0C040; }
+  .p-ricorda .pilastro-dot { background: #F0C040; }
+  .p-ricorda .pilastro-num { color: #F0C040; }
+
+  .p-guida { border-top: 3px solid #F08858; }
+  .p-guida .pilastro-dot { background: #F08858; }
+  .p-guida .pilastro-num { color: #F08858; }
+
+  /* ── COME FUNZIONA ── */
+  .funziona {
+    background: #fff;
+    padding: 100px 24px;
+  }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 56px;
+    max-width: 700px;
+  }
+
+  .step {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+    position: relative;
+    padding-bottom: 40px;
+  }
+
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 48px;
+    width: 2px;
+    height: calc(100% - 48px);
+    background: linear-gradient(to bottom, var(--blu-accento), transparent);
+  }
+
+  .step-num {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--blu);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-content h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--blu);
+    margin-bottom: 8px;
+  }
+
+  .step-content p {
+    font-size: 16px;
+    color: var(--grigio);
+    line-height: 1.6;
+  }
+
+  /* ── VIDEO ── */
+  .video-section {
+    background: #F4F7FA;
+    padding: 100px 24px;
+    text-align: center;
+  }
+
+  .video-placeholder {
+    max-width: 800px;
+    margin: 48px auto 0;
+    background: var(--blu);
+    border-radius: 20px;
+    aspect-ratio: 16/9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    border: 2px solid rgba(46,134,193,0.3);
+  }
+
+  .video-placeholder:hover { transform: scale(1.01); }
+
+  .video-play {
+    width: 80px; height: 80px;
+    background: var(--blu-accento);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #fff;
+  }
+
+  .video-label {
+    color: rgba(255,255,255,0.6);
+    font-size: 16px;
+  }
+
+  .video-coming {
+    color: var(--oro);
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  /* ── PREZZI ── */
+  .prezzi {
+    background: #fff;
+    padding: 100px 24px;
+  }
+
+  .prezzi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-top: 56px;
+  }
+
+  .prezzo-card {
+    border: 2px solid #E8EDF2;
+    border-radius: 20px;
+    padding: 40px 32px;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .prezzo-card:hover {
+    border-color: var(--blu-accento);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 48px rgba(13,33,55,0.1);
+  }
+
+  .prezzo-card.featured {
+    border-color: var(--blu-accento);
+    background: var(--blu);
+    color: #fff;
+  }
+
+  .featured-badge {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--blu-accento);
+    color: #fff;
+    padding: 4px 20px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .piano-nome {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--blu-accento);
+    margin-bottom: 16px;
+  }
+
+  .featured .piano-nome { color: var(--oro); }
+
+  .piano-prezzo {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    font-weight: 900;
+    color: var(--blu);
+    line-height: 1;
+  }
+
+  .featured .piano-prezzo { color: #fff; }
+
+  .piano-prezzo span {
+    font-size: 20px;
+    font-weight: 400;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .piano-clienti {
+    font-size: 15px;
+    color: var(--grigio);
+    margin: 12px 0 28px;
+  }
+
+  .featured .piano-clienti { color: rgba(255,255,255,0.6); }
+
+  .piano-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .piano-features li {
+    font-size: 15px;
+    color: var(--grigio);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .featured .piano-features li { color: rgba(255,255,255,0.7); }
+
+  .piano-features li::before {
+    content: '✓';
+    color: var(--blu-accento);
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .featured .piano-features li::before { color: var(--oro); }
+
+  .promo-banner {
+    background: linear-gradient(135deg, var(--blu), var(--blu-medio));
+    border-radius: 16px;
+    padding: 32px 40px;
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .promo-text h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .promo-text p {
+    color: rgba(255,255,255,0.6);
+    font-size: 16px;
+  }
+
+  /* ── CONTATTO ── */
+  .contatto {
+    background: var(--blu);
+    padding: 100px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .contatto::before {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%);
+    bottom: -200px; right: -100px;
+  }
+
+  .contatto .section-title { color: #fff; }
+  .contatto .section-label { color: var(--oro); }
+
+  .contatto-sub {
+    font-size: 18px;
+    color: rgba(255,255,255,0.6);
+    max-width: 600px;
+    margin-bottom: 48px;
+    line-height: 1.7;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    max-width: 700px;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-field.full { grid-column: 1 / -1; }
+
+  .form-field label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .form-field input,
+  .form-field select {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 14px 18px;
+    color: #fff;
+    font-size: 16px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+
+  .form-field input:focus,
+  .form-field select:focus {
+    border-color: var(--blu-accento);
+  }
+
+  .form-field input::placeholder { color: rgba(255,255,255,0.3); }
+
+  .form-field select option { background: var(--blu); }
+
+  .form-submit {
+    margin-top: 8px;
+  }
+
+  .btn-submit {
+    background: var(--blu-accento);
+    color: #fff;
+    border: none;
+    padding: 18px 48px;
+    border-radius: 10px;
+    font-size: 17px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+
+  .btn-submit:hover {
+    background: #2470A0;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(46,134,193,0.4);
+  }
+
+  .success-msg {
+    display: none;
+    background: rgba(109,217,140,0.15);
+    border: 1px solid rgba(109,217,140,0.4);
+    color: #6DD98C;
+    padding: 16px 24px;
+    border-radius: 10px;
+    margin-top: 16px;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .whatsapp-alt {
+    margin-top: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgba(255,255,255,0.5);
+    font-size: 15px;
+  }
+
+  .whatsapp-alt a {
+    color: #6DD98C;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .whatsapp-alt a:hover { text-decoration: underline; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #070F1A;
+    padding: 40px 24px;
+    text-align: center;
+  }
+
+  footer .logo-footer {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  footer .logo-footer span { color: var(--blu-accento); }
+
+  footer p {
+    color: rgba(255,255,255,0.3);
+    font-size: 14px;
+  }
+
+  footer a {
+    color: rgba(255,255,255,0.5);
+    text-decoration: none;
+  }
+
+  footer a:hover { color: #fff; }
+
+  /* ── ANIMAZIONI ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%       { transform: translateX(-50%) translateY(8px); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .promo-banner { text-align: center; }
+    .steps { padding-left: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🚀 Pre-lancio — Test gratuito disponibile</div>
+  <div class="hero-logo">Pratica<span>Ok</span></div>
+  <p class="hero-sub">Il primo sistema italiano che raccoglie i documenti dei tuoi clienti su WhatsApp — in automatico.</p>
+  <div class="hero-pilastri">
+    <span class="pill pill-blu">Coordina</span>
+    <span class="pill pill-verde">Archivia</span>
+    <span class="pill pill-oro">Ricorda</span>
+    <span class="pill pill-arancio">Guida</span>
+  </div>
+  <div class="hero-cta">
+    <a href="#contatto" class="btn-primary">Richiedi la demo gratuita</a>
+    <a href="#come-funziona" class="btn-secondary">Scopri come funziona</a>
+  </div>
+  <div class="scroll-hint">SCORRI</div>
+</section>
+
+<!-- PROBLEMA -->
+<section class="problema">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">Il problema</p>
+      <h2 class="section-title">Quante ore perdi ogni settimana<br>a <em>rincorrere i documenti</em>?</h2>
+    </div>
+    <div class="problema-grid">
+      <div class="problema-card reveal">
+        <div class="problema-icon">⏰</div>
+        <h3>Tempo sprecato</h3>
+        <p>Ore perse ogni settimana a rincorrere clienti su WhatsApp per documenti mancanti.</p>
+      </div>
+      <div class="problema-card reveal">
+        <div class="problema-icon">📱</div>
+        <h3>File ovunque</h3>
+        <p>Documenti sparsi tra centinaia di messaggi WhatsApp impossibili da ritrovare.</p>
+      </div>
+      <div class="problema-card reveal">
+        <div class="problema-icon">❌</div>
+        <h3>Pratiche bloccate</h3>
+        <p>Pratiche ferme perché manca sempre qualcosa e nessuno se ne accorge in tempo.</p>
+      </div>
+      <div class="problema-card reveal">
+        <div class="problema-icon">🔄</div>
+        <h3>Clienti disorientati</h3>
+        <p>Clienti che non sanno dove trovare i documenti e ti chiamano continuamente.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUZIONE -->
+<section class="soluzione">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">La soluzione</p>
+      <h2 class="section-title">PraticaOk lavora<br>al posto tuo.</h2>
+      <p class="soluzione-intro">Niente da installare. Il cliente usa WhatsApp come sempre. Tu apri un pannello e trovi tutto pronto, ordinato e scaricabile con un click.</p>
+    </div>
+    <div class="pilastri-grid">
+      <div class="pilastro-card p-coordina reveal">
+        <div class="pilastro-num">1</div>
+        <div class="pilastro-dot"></div>
+        <h3>COORDINA</h3>
+        <p>Gestisce la raccolta documenti in automatico. Il broker inserisce il cliente in 30 secondi — il sistema fa tutto il resto.</p>
+      </div>
+      <div class="pilastro-card p-archivia reveal">
+        <div class="pilastro-num">2</div>
+        <div class="pilastro-dot"></div>
+        <h3>ARCHIVIA</h3>
+        <p>Salva ogni documento in modo ordinato e sempre accessibile. Niente più file persi su WhatsApp.</p>
+      </div>
+      <div class="pilastro-card p-ricorda reveal">
+        <div class="pilastro-num">3</div>
+        <div class="pilastro-dot"></div>
+        <h3>RICORDA</h3>
+        <p>Invia reminder automatici ogni sera ai clienti con documenti mancanti. Tu dormi, PraticaOk lavora.</p>
+      </div>
+      <div class="pilastro-card p-guida reveal">
+        <div class="pilastro-num">4</div>
+        <div class="pilastro-dot"></div>
+        <h3>GUIDA</h3>
+        <p>Istruisce il cliente su come trovare ogni documento — visure, 730, CUD, estratti conto e molti altri.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COME FUNZIONA -->
+<section class="funziona" id="come-funziona">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">Come funziona</p>
+      <h2 class="section-title">Semplice per te.<br><em>Semplice per il cliente.</em></h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Il broker inserisce il cliente</h3>
+          <p>Nome, numero WhatsApp e tipo di pratica. 30 secondi e la pratica è aperta. Il sistema carica automaticamente la lista documenti necessari.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Il cliente scrive su WhatsApp</h3>
+          <p>Il cliente riceve automaticamente la lista completa dei documenti da mandare. Nessuna telefonata, nessuna spiegazione.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>I documenti arrivano in automatico</h3>
+          <p>Il cliente manda i file uno ad uno. Il sistema li archivia, aggiorna la lista e sa sempre cosa manca ancora.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Il broker trova tutto pronto</h3>
+          <p>Apri il pannello e vedi ogni pratica aggiornata in tempo reale. Documenti ricevuti, mancanti e scaricabili con un click.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO -->
+<section class="video-section">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">Demo</p>
+      <h2 class="section-title">Guarda come funziona<br>in <em>2 minuti</em></h2>
+    </div>
+    <div class="video-wrapper reveal" style="max-width:800px; margin:48px auto 0; border-radius:20px; overflow:hidden; aspect-ratio:9/16;">
+  <iframe 
+    width="100%" 
+    height="100%" 
+    src="https://www.youtube.com/embed/53kr1p7yOo0" 
+    title="PraticaOk Demo" 
+    frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+    allowfullscreen>
+  </iframe>
+</div>
+  </div>
+</section>
+
+<!-- PREZZI -->
+<section class="prezzi">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">Piani</p>
+      <h2 class="section-title">Semplice.<br><em>Senza sorprese.</em></h2>
+    </div>
+    <div class="prezzi-grid">
+      <div class="prezzo-card reveal">
+        <div class="piano-nome">Base</div>
+        <div class="piano-prezzo">49<span>€/mese</span></div>
+        <div class="piano-clienti">Fino a 30 clienti attivi</div>
+        <ul class="piano-features">
+          <li>Raccolta documenti automatica</li>
+          <li>Archivio completo</li>
+          <li>Reminder serali automatici</li>
+          <li>Chatbot guida documenti</li>
+          <li>Pannello broker dedicato</li>
+        </ul>
+      </div>
+      <div class="prezzo-card featured reveal">
+        <div class="featured-badge">⭐ Più scelto</div>
+        <div class="piano-nome">Pro</div>
+        <div class="piano-prezzo">99<span>€/mese</span></div>
+        <div class="piano-clienti">Fino a 100 clienti attivi</div>
+        <ul class="piano-features">
+          <li>Tutto del piano Base</li>
+          <li>Pratiche illimitate</li>
+          <li>Supporto prioritario</li>
+          <li>Statistiche pratiche</li>
+          <li>Accesso anticipato novità</li>
+        </ul>
+      </div>
+      <div class="prezzo-card reveal">
+        <div class="piano-nome">Business</div>
+        <div class="piano-prezzo">199<span>€/mese</span></div>
+        <div class="piano-clienti">Clienti illimitati</div>
+        <ul class="piano-features">
+          <li>Tutto del piano Pro</li>
+          <li>Multi-broker</li>
+          <li>Onboarding dedicato</li>
+          <li>SLA garantito</li>
+          <li>Personalizzazioni</li>
+        </ul>
+      </div>
+    </div>
+    <div class="promo-banner reveal">
+      <div class="promo-text">
+        <h3>🎁 Primo mese completamente gratuito</h3>
+        <p>Siamo in fase di pre-lancio. Testa PraticaOk senza rischi — nessun costo, nessun impegno.</p>
+      </div>
+      <a href="#contatto" class="btn-primary">Inizia gratis</a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATTO -->
+<section class="contatto" id="contatto">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">Contatti</p>
+      <h2 class="section-title">Richiedi la tua<br>demo gratuita</h2>
+      <p class="contatto-sub">Compila il modulo e ti contatteremo entro 24 ore per organizzare una demo dal vivo di 15 minuti.</p>
+    </div>
+    <form class="form-grid reveal" id="contactForm">
+      <div class="form-field">
+        <label>Nome e Cognome</label>
+        <input type="text" placeholder="Mario Rossi" required>
+      </div>
+      <div class="form-field">
+        <label>Telefono / WhatsApp</label>
+        <input type="tel" placeholder="+39 333 1234567" required>
+      </div>
+      <div class="form-field">
+        <label>Email</label>
+        <input type="email" placeholder="mario@studio.it">
+      </div>
+      <div class="form-field">
+        <label>Tipo di pratica principale</label>
+        <select>
+          <option value="">Seleziona...</option>
+          <option>Mutui</option>
+          <option>Prestiti personali</option>
+          <option>Entrambi</option>
+          <option>Altro</option>
+        </select>
+      </div>
+      <div class="form-field full form-submit">
+        <button type="submit" class="btn-submit">Richiedi demo gratuita →</button>
+      </div>
+    </form>
+    <div class="success-msg" id="successMsg">
+      ✅ Richiesta ricevuta! Ti contatteremo entro 24 ore su WhatsApp.
+    </div>
+    <div class="whatsapp-alt reveal">
+      <span>Preferisci scrivere direttamente?</span>
+      <a href="https://wa.me/393934146871" target="_blank">📱 Scrivici su WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo-footer">Pratica<span>Ok</span></div>
+  <p>© 2026 PraticaOk — Giuseppe Romeo &nbsp;|&nbsp; <a href="mailto:praticaok@gmail.com">praticaok@gmail.com</a></p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Form submit
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    this.style.display = 'none';
+    document.getElementById('successMsg').style.display = 'block';
+    // Apre WhatsApp con messaggio precompilato
+    setTimeout(() => {
+      window.open('https://wa.me/393934146871?text=Buongiorno%2C+ho+compilato+il+modulo+su+PraticaOk+e+vorrei+richiedere+una+demo+gratuita.', '_blank');
+    }, 1000);
+  });
+</script>
+</body>
+</html>
